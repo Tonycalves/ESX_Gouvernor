@@ -12,8 +12,16 @@ Config.Locale = 'fr'
 
 Config.Zones = {
 
-	CloakRoom = { --Vestaire
-		Pos   = {x = 126.43100738525, y = -729.10052490234, z = 241.15190124512},
+	CloakRoom = { --Vestaire privé président
+		--Pos   = {x = 126.43100738525, y = -729.10052490234, z = 241.15190124512},
+		Pos   = {x = -448.79290771484, y = -347.16714477539, z = 98.105918884277},
+		Size  = {x = 1.5, y = 1.5, z = 1.0},
+		Color = {r = 0, g = 204, b = 3},
+		Type  = 1
+	},
+
+	CloakRoom2 = { --Vestaire garde du corps
+		Pos   = {x = -475.04498291016, y = -326.22766113281, z = 98.013450622559},
 		Size  = {x = 1.5, y = 1.5, z = 1.0},
 		Color = {r = 0, g = 204, b = 3},
 		Type  = 1
@@ -27,14 +35,16 @@ Config.Zones = {
 	},
 
 	OfficeExit = { -- sorti du batiment
-		Pos   = {x = 136.16203308105, y = -761.72442626953, z = 241.15211486816},
+		--Pos   = {x = 136.16203308105, y = -761.72442626953, z = 241.15211486816},
+		Pos   = {x = -486.63452148438, y = -335.03411865234, z = 90.007614135742},
 		Size  = {x = 1.5, y = 1.5, z = 1.0},
 		Color = {r = 204, g = 91, b = 0},
 		Type  = 1
 	},
 
 	OfficeInside = { -- spawn interieur batiment
-		Pos   = {x = 135.32885742188, y = -764.09942626953, z = 241.15211486816},
+		--Pos   = {x = 135.32885742188, y = -764.09942626953, z = 241.15211486816},
+		Pos   = {x = -484.81475830078, y = -335.34713745117, z = 90.007614135742},
 		Size  = {x = 1.5, y = 1.5, z = 1.0},
 		Type  = -1
 	},
@@ -46,7 +56,8 @@ Config.Zones = {
 	},
 
 	OfficeActions = { -- Marker action boss
-		Pos   = {x = 156.23593139648, y = -740.03515625, z = 241.1519317624},
+		--Pos   = {x = 156.23593139648, y = -740.03515625, z = 241.1519317624},
+		Pos   = {x = -449.40557861328, y = -339.91738891602, z = 90.007621765137},
 		Size  = {x = 1.5, y = 1.5, z = 1.0},
 		Color = {r = 0, g = 204, b = 3},
 		Type  = 1
@@ -113,6 +124,56 @@ Config.Zones = {
 
 	VehicleDeleter = { -- Marker pour ranger la voiture
 		Pos   = {x = -397.39294433594, y = 1174.0627441406, z = 324.64169311523},
+		Size  = {x = 3.0, y = 3.0, z = 1.0},
+		Color = {r = 204, g = 0, b = 0},
+		Type  = 1
+	},
+
+	------------ TP hélico -----------
+	HelicoEnter = { -- entrée helico
+		Pos   = {x = -459.17309570313, y = -338.62091064453, z = 90.007537841797},
+		Size  = {x = 1.5, y = 1.5, z = 1.0},
+		Color = {r = 0, g = 204, b = 3},
+		Type  = 1
+	},
+
+	HelicoInside = { -- spawn interieur place helico
+		Pos   = {x = -499.70416259766, y = -322.44952392578, z = 72.168121337891},
+		Size  = {x = 1.5, y = 1.5, z = 1.0},
+		Color = {r = 0, g = 204, b = 3},
+		Type  = -1
+	},
+
+	HelicoExit = { -- exit helico
+		Pos   = {x = -499.54034423828, y = -324.3981628418, z = 72.168121337891},
+		Size  = {x = 1.5, y = 1.5, z = 1.0},
+		Color = {r = 204, g = 91, b = 0},
+		Type  = 1
+	},
+
+	HelicoOutside = { -- spawn interieur batiment president
+		Pos   = {x = -461.71112060547, y = -338.32485961914, z = 90.007621765137},
+		Size  = {x = 1.5, y = 1.5, z = 1.0},
+		Color = {r = 0, g = 204, b = 3},
+		Type  = -1
+	},
+
+	HelicoSpawner = { -- Menu pour spawn l'hélico
+		Pos   = {x = -499.01245117188, y = -317.38745117188, z = 72.168121337891},
+		Size  = {x = 1.5, y = 1.5, z = 1.0},
+		Color = {r = 242, g = 255, b = 0},
+		Type  = 1
+	},
+
+	HelicoSpawnPoint = { --Spawn de l'hélico sur la plateforme
+		Pos   = {x = -506.28784179688, y = -307.75677490234, z = 75.047210693359}, --Heading = 291.4347
+		Size  = {x = 1.5, y = 1.5, z = 1.0},
+		Color = {r = 0, g = 204, b = 3},
+		Type  = -1
+	},
+
+	HelicoDeleter = { -- Marker pour ranger l'hélico
+		Pos   = {x = -506.3141784668, y = -307.77444458008, z = 74.047294616699},
 		Size  = {x = 3.0, y = 3.0, z = 1.0},
 		Color = {r = 204, g = 0, b = 0},
 		Type  = 1

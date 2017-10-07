@@ -53,7 +53,6 @@ function CloakRoom()
 				{label = 'Armurerie', value = 'weapon_wear'},
 			},
 		},
-		
 		function(data, menu)
 
 			menu.close()
@@ -95,6 +94,119 @@ function CloakRoom()
 		end
 	)
 
+end
+
+function OpenHelicoSpawnerMenu()
+
+	local elements = {
+		{label = 'Sortir Hélico', value = 'vehicle_list'},
+	}
+	ESX.UI.Menu.CloseAll()
+	ESX.UI.Menu.Open(
+		'default', GetCurrentResourceName(), 'gouvernor_actions',
+		{
+			title    = 'Hélico Gouverneur',
+			elements = elements
+		},
+		function(data, menu)
+			if data.current.value == 'vehicle_list' then
+
+				if Config.EnableSocietyOwnedVehicles then
+
+						local elements = {}
+
+						ESX.TriggerServerCallback('esx_society:getVehiclesInGarage', function(vehicles)
+
+							for i=1, #vehicles, 1 do
+								table.insert(elements, {label = GetDisplayNameFromVehicleModel(vehicles[i].model) .. ' [' .. vehicles[i].plate .. ']', value = vehicles[i]})
+							end
+
+							ESX.UI.Menu.Open(
+								'default', GetCurrentResourceName(), 'vehicle_spawner',
+								{
+									title    = 'Hélico',
+									align    = 'top-left',
+									elements = elements,
+								},
+								function(data, menu)
+
+									menu.close()
+
+									local vehicleProps = data.current.value
+
+									ESX.Game.SpawnVehicle(vehicleProps.model, Config.Zones.HelicoSpawnPoint.Pos, 291.0, function(vehicle)
+										ESX.Game.SetVehicleProperties(vehicle, vehicleProps)
+										local playerPed = GetPlayerPed(-1)
+										TaskWarpPedIntoVehicle(playerPed,  vehicle,  -1)
+									end)
+
+									TriggerServerEvent('esx_society:removeVehicleFromGarage', 'gouvernor', vehicleProps)
+
+								end,
+								function(data, menu)
+									menu.close()
+								end
+							)
+
+						end, 'gouvernor')
+
+					else
+
+						local elements = {
+							{label = 'Petit Hélico', value = 'Buzzard2'},
+							{label = 'Moyen hélico', value = 'Frogger2'}
+							--{label = 'SUV', value = 'FBI2'}
+						}
+
+						ESX.UI.Menu.CloseAll()
+
+						ESX.UI.Menu.Open(
+							'default', GetCurrentResourceName(), 'spawn_vehicle',
+							{
+								title    = 'Hélico',
+								elements = elements
+							},
+							function(data, menu)
+								for i=1, #elements, 1 do							
+									if Config.MaxInService == -1 then
+										ESX.Game.SpawnVehicle(data.current.value, Config.Zones.HelicoSpawnPoint.Pos, 291.0, function(vehicle) -- direction du spawn
+											local playerPed = GetPlayerPed(-1)
+											SetVehicleColours(vehicle, 12, 12)
+											SetVehicleWindowTint(vehicle, 1)
+										end)
+										break
+									else
+										ESX.TriggerServerCallback('esx_service:enableService', function(canTakeService, maxInService, inServiceCount)
+											if canTakeService then
+												ESX.Game.SpawnVehicle(data.current.value, Config.Zones.HelicoSpawnPoint.Pos, 291.0, function(vehicle)
+													local playerPed = GetPlayerPed(-1)
+													SetVehicleColours(vehicle, 12, 12)
+													SetVehicleWindowTint(vehicle, 1)
+												end)
+											else
+												ESX.ShowNotification('Service complet : ' .. inServiceCount .. '/' .. maxInService)
+											end
+										end, 'gouvernor')
+										break
+									end
+								end
+								menu.close()
+							end,
+							function(data, menu)
+								menu.close()
+								OpenVehicleSpawnerMenu()
+							end
+						)
+					end
+			end
+		end,
+		function(data, menu)
+			menu.close()
+			CurrentAction     = 'helico_spawner_menu'
+			CurrentActionMsg  = 'Appuyez sur ~INPUT_CONTEXT~ pour accéder au menu.'
+			CurrentActionData = {}
+		end
+	)
 end
 
 function OpenVehicleSpawnerMenu()
@@ -247,10 +359,13 @@ AddEventHandler('esx:playerLoaded', function(xPlayer)
 	if PlayerData.job.name == 'gouvernor' then
 		Config.Zones.OfficeActions.Type = 1
 		Config.Zones.GarageEnter.Type = 1
+		Config.Zones.HelicoEnter.Type = 1
 		Config.Zones.VehicleDeleter.Type = 1
+
 	else
 		Config.Zones.OfficeActions.Type = -1
 		Config.Zones.GarageEnter.Type = -1
+		Config.Zones.HelicoEnter.Type = -1
 		Config.Zones.VehicleDeleter.Type = -1
 	end
 
@@ -264,13 +379,14 @@ AddEventHandler('esx:setJob', function(job)
 	if PlayerData.job.name == 'gouvernor' then
 		Config.Zones.OfficeActions.Type = 1
 		Config.Zones.GarageEnter.Type = 1
+		Config.Zones.HelicoEnter.Type = 1
 		Config.Zones.VehicleDeleter.Type = 1
 	else
 		Config.Zones.OfficeActions.Type = -1
 		Config.Zones.GarageEnter.Type = -1
+		Config.Zones.HelicoEnter.Type = -1
 		Config.Zones.VehicleDeleter.Type = -1
 	end
-
 end)
 
 function OpenTpGarage()
@@ -283,6 +399,14 @@ function OpenTpGarage()
 		ESX.Game.Teleport(playerPed, spawnCoords, function()
 			TriggerEvent('instance:create', 'garagegouvernor')
 		end)
+end
+
+function OpenTpHelico()
+	SetEntityCoords(GetPlayerPed(-1),  Config.Zones.HelicoInside.Pos.x,  Config.Zones.HelicoInside.Pos.y,  Config.Zones.HelicoInside.Pos.z)
+end
+
+function OpenExitHelico()
+	SetEntityCoords(GetPlayerPed(-1),  Config.Zones.HelicoOutside.Pos.x,  Config.Zones.HelicoOutside.Pos.y,  Config.Zones.HelicoOutside.Pos.z)
 end
 
 function OpenExitGarage()
@@ -351,7 +475,7 @@ AddEventHandler('esx_gouverneur:hasEnteredMarker', function(zone)
 		CurrentActionData = {}
 	end
 
-	if zone == 'CloakRoom' and PlayerData.job ~= nil and PlayerData.job.name == 'gouvernor' then
+	if zone == 'CloakRoom' or zone == 'CloakRoom2' and PlayerData.job ~= nil and PlayerData.job.name == 'gouvernor' then
 		CurrentAction     = 'cloakroom_menu'
 		CurrentActionMsg  = _U('press_to_access')
 		CurrentActionData = {}
@@ -369,6 +493,40 @@ AddEventHandler('esx_gouverneur:hasEnteredMarker', function(zone)
 		CurrentActionData = {}
 	end
 
+	------ Helicoptère
+	if zone == 'HelicoEnter' and PlayerData.job.name == 'gouvernor' then
+		CurrentAction = 'tp_helico'
+		CurrentActionMsg = _U('press_to_helico')
+		CurrentActionData = {}
+	end
+
+	if zone == 'HelicoExit' then
+		CurrentAction = 'tp_exit_helico'
+		CurrentActionMsg = _U('press_to_exit_helico')
+		CurrentActionData = {}
+	end
+
+	if zone == 'HelicoSpawner' then
+		CurrentAction     = 'helico_spawner_menu'
+		CurrentActionMsg  = _U('helico_spawn')
+		CurrentActionData = {}
+	end
+
+	if zone == 'HelicoDeleter' then
+		
+		local playerPed = GetPlayerPed(-1)
+		
+		if IsPedInAnyVehicle(playerPed,  false) then
+
+			local vehicle = GetVehiclePedIsIn(playerPed,  false)
+
+			CurrentAction     = 'delete_helico'
+			CurrentActionMsg  = _U('helico_delete')
+			CurrentActionData = {vehicle = vehicle}
+		end
+	end
+
+	----- Garage voiture
 	if zone == 'GarageExit' then
 		CurrentAction = 'tp_exit_garage'
 		CurrentActionMsg = _U('press_to_exit_garage')
@@ -522,6 +680,14 @@ Citizen.CreateThread(function()
 					OpenTpGarage()
 				end
 
+				if CurrentAction == 'tp_helico' then
+					OpenTpHelico()
+				end
+
+				if CurrentAction == 'tp_exit_helico' then
+					OpenExitHelico()
+				end
+
 				if CurrentAction == 'tp_exit_garage' then
 					OpenExitGarage()
 				end
@@ -541,6 +707,25 @@ Citizen.CreateThread(function()
 				if CurrentAction == 'vehicle_spawner_menu' and PlayerData.job.name == 'gouvernor' then
 					OpenVehicleSpawnerMenu()
 				end
+
+				if CurrentAction == 'helico_spawner_menu' and PlayerData.job.name == 'gouvernor' then
+					OpenHelicoSpawnerMenu()
+				end
+
+				if CurrentAction == 'delete_helico' and PlayerData.job.name == 'gouvernor' then
+							if Config.EnableSocietyOwnedVehicles then
+								local vehicleProps = ESX.Game.GetVehicleProperties(CurrentActionData.vehicle)
+								TriggerServerEvent('esx_society:putVehicleInGarage', 'gouvernor', vehicleProps)
+							else
+								if
+									GetEntityModel(vehicle) == GetHashKey('Buzzard2') or
+									GetEntityModel(vehicle) == GetHashKey('Frogger2')
+									then
+									TriggerServerEvent('esx_service:disableService', 'gouvernor')
+								end
+							end
+							ESX.Game.DeleteVehicle(CurrentActionData.vehicle)
+            	end
 
 				 if CurrentAction == 'delete_vehicle' and PlayerData.job.name == 'gouvernor' then
 							if Config.EnableSocietyOwnedVehicles then
@@ -563,8 +748,6 @@ Citizen.CreateThread(function()
 		end
 	end
 end)
-
-
 
 ------------------------------
 
@@ -597,17 +780,15 @@ AddEventHandler("esx_gouverneur:sendRequest", function(name,id)
 	end
 end)
 
-
 RegisterNetEvent("esx_gouverneur:sendStatus")
 AddEventHandler("esx_gouverneur:sendStatus", function(status)
 	if(status == 1) then
 		SendNotification("~g~Quelqu'un est venu vous ouvrir la porte.")
-		SetEntityCoords(GetPlayerPed(-1), 135.32885742188, -764.09942626953, 241.15211486816)
+		SetEntityCoords(GetPlayerPed(-1), -484.81475830078, -335.34713745117, 90.007614135742)
 	else
 		SendNotification("~r~Personne n'a voulu vous ouvrir la porte...")
 	end
 end)
-
 
 function SendNotification(message)
 	SetNotificationTextEntry("STRING")

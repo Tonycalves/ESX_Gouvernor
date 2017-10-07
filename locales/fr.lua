@@ -15,7 +15,7 @@ Locales['fr'] = {
     ['realtors'] = 'Gouvernement',
     ['client'] = 'Citoyen',
     ['boss_action'] = 'action Patron',
-    ['veh_spawn'] = 'appuyez sur ~INPUT_CONTEXT~ pour sortir un véhicule',
+    ['veh_spawn'] = 'Appuyez sur ~INPUT_CONTEXT~ pour sortir un véhicule',
     ['gouvernor'] = 'Menu Gouvernement',
     ['veh_delete'] = 'Appuyez sur ~INPUT_CONTEXT~ pour ranger le véhicule.',
     ['cloakroom'] = 'Appuyez sur ~INPUT_CONTEXT~ pour ouvrir le vestiaire.',
@@ -27,4 +27,9 @@ Locales['fr'] = {
     ['press_to_garage'] = 'Appuyez sur ~INPUT_CONTEXT~ pour entrer dans le garage',
     ['press_to_exit_garage'] = 'Appuyez sur ~INPUT_CONTEXT~ pour sortir du garage',
     ['press_to_exit_with_vehicle'] = 'Appuyez sur ~INPUT_CONTEXT~ pour sortir avec la voiture',
+
+    ['press_to_helico'] = "Appuyez sur ~INPUT_CONTEXT~ pour vous rendre à l'hélico",
+    ['press_to_exit_helico'] = "Appuyez sur ~INPUT_CONTEXT~ pour rentrer dans votre propriété",
+    ['helico_spawn'] = "Appuyez sur ~INPUT_CONTEXT~ pour sortir l'hélico",
+    ['helico_delete'] = "Appuyez sur ~INPUT_CONTEXT~ pour ranger l'hélico",
 }
